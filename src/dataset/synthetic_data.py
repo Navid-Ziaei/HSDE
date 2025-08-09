@@ -60,7 +60,13 @@ class SyntheticDataGenerator:
         transformed = 7 * np.exp(-signal)
         noisy_signal = transformed + np.sqrt(self.noise_variance) * self.rng.standard_normal(len(signal))
         zero_mean_signal = noisy_signal - np.mean(noisy_signal)
-        return zero_mean_signal
+
+        data = {
+            'Z': zero_mean_signal,
+            'clean': transformed,
+            't': time_series
+        }
+        return data
 
     # --------------------------------------
     # Model 4: Lorenz attractor's z-coordinate
@@ -106,9 +112,9 @@ class SyntheticDataGenerator:
     # --------------------------------------
     # Visualization Utilities
     # --------------------------------------
-    def _plot_data(self, data: np.ndarray, title: str, xlabel: str = "Time step", ylabel: str = "Value", show: bool = True):
+    def _plot_data(self, data: np.ndarray, title: str, xlabel: str = "Time step", ylabel: str = "Value", show: bool = True, figsize=(8, 4)):
         """Generic plotting helper."""
-        plt.figure(figsize=(8, 4))
+        plt.figure(figsize=figsize)
         plt.plot(data, lw=1.5)
         plt.title(title)
         plt.xlabel(xlabel)
@@ -136,3 +142,4 @@ class SyntheticDataGenerator:
         """Generate and plot Lorenz attractor's z-coordinate."""
         data = self.generate_lorenz_z()
         self._plot_data(data, "Lorenz Attractor Z-Coordinate", show=show)
+
