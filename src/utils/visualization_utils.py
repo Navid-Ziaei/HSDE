@@ -3,6 +3,11 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 
+import numpy as np
+import torch
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401  (needed for 3D projection)
+
 # -----------------------------
 # Curves: log-marginal, MSE, params over EM iters
 # References:
