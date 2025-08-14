@@ -19,7 +19,7 @@ class SyntheticDataGenerator:
         - Lorenz attractor's third coordinate
     """
 
-    def __init__(self, num_steps: int, time_step: float, noise_variance: float, random_seed: int = None):
+    def __init__(self, num_steps: int, time_step: float, noise_variance: float, random_seed: int = None, device = 'cpu'):
         """
         Parameters
         ----------
@@ -32,6 +32,7 @@ class SyntheticDataGenerator:
         random_seed : int, optional
             Seed for reproducibility. If None, results will vary each run.
         """
+        self.device = device
         self.num_steps = num_steps
         self.time_step = time_step
         self.noise_variance = noise_variance
@@ -89,8 +90,7 @@ class SyntheticDataGenerator:
             self,
             initial_state: Tuple[float, float, float] = (-1.0, 1.0, -1.0),
             time_step: float = 0.01,
-            number_of_channels=10,
-            device='cpu'):
+            number_of_channels=10):
         """
         Generate 3D Lorenz system trajectories and noisy observations.
 
@@ -109,9 +109,9 @@ class SyntheticDataGenerator:
             Dict
         """
         N = number_of_channels
-        W = 0.1 * torch.randn(N, 3, device=device)
+        W = 0.1 * torch.randn(N, 3, device=self.device)
 
-        diag_elems = self.noise_variance * torch.abs(torch.randn(N, device=device))
+        diag_elems = self.noise_variance * torch.abs(torch.randn(N, device=self.device))
         z_var = torch.diag(diag_elems)
 
         # Step 1: Simulate Lorenz system on uniform grid
@@ -121,16 +121,16 @@ class SyntheticDataGenerator:
         )
 
         # Step 2: Convert to torch tensor and center
-        latent_states = torch.from_numpy(states_uniform.T).float()  # [3, K]
+        latent_states = torch.from_numpy(states_uniform.T).float().to(self.device)  # [3, K]
         latent_states -= latent_states.mean(dim=1, keepdim=True)
 
         # Step 3: Project to observation space and add Gaussian noise
-        cholesky_factor = torch.linalg.cholesky(z_var)  # [N, N]
-        noise = cholesky_factor @ torch.randn(N, self.num_steps)
+        cholesky_factor = torch.linalg.cholesky(z_var).to(self.device)  # [N, N]
+        noise = cholesky_factor @ torch.randn(N, self.num_steps, device=self.device)
         observations = W @ latent_states + noise
 
         data = {
-            'observation_z': observations,
+            'observation_z': observations.to(self.device),
             'latent': latent_states,
             't': time_uniform
         }
