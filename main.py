@@ -1,13 +1,6 @@
-import torch
-import torch.distributions as D
-from matplotlib import pyplot as plt
-
 from src.dataset import SyntheticDataGenerator
-from src.models.hsde_3d_model import HiSDE3D, plot_hisde_3d
-from src.models.model import HierarchicalSDEParticleFilter
-from src.utils.utils import extract_curves
-from src.utils.visualization_utils import plot_training_curves, plot_inference_and_inducing_points, \
-    plot_hisde_3d_matplotlib
+from src.models.hsde.hsde_3d_model import HiSDE3D, plot_hisde_3d
+from src.utils.visualization_utils import plot_hisde_3d_matplotlib
 
 # Parameters from paper
 device = 'cuda'
@@ -47,8 +40,8 @@ if mode == '1d':
 else:
     synthetic_data = gen.generate_lorenz_3d()
     t = synthetic_data["t"]  # (500,)
-    observation_z = synthetic_data["observation_z"]  # (500, 1) noisy observed signal
-    latent = synthetic_data["latent"]  # (500,)
+    observation_z = synthetic_data["observation_z"]  # (500, 10) noisy observed signal
+    latent = synthetic_data["latent"]  # (500, 3)
 
     gen.plot_lorenz_3d(latent)
 
