@@ -24,7 +24,7 @@ random_seed = 42
 latent_dim = 3  # Should match the true latent dimensionality of Lorenz
 hidden_dim = 64  # Hidden dimension for the RNN encoder
 obs_dim = 10  # Observation dimension
-num_epochs = 3000
+num_epochs = 7000
 learning_rate = 1e-3
 kl_weight = 0.1  # Weight for the KL divergence term in the loss
 
